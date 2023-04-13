@@ -1,2 +1,4 @@
 maildir
 *.tar.gz
+*.csv
+__pycache__
