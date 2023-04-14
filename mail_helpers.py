@@ -45,6 +45,7 @@ def ingest_emails(args):
     non_address_headers = ["Date", "Subject"]
     messages_list = []
     full_top_path = os.path.normpath(basedir + "/" + top_level_folder)
+
     for path_tuple in os.walk(full_top_path):
         mail_folder = os.path.relpath(path_tuple[0], full_top_path)
         for message_file in path_tuple[2]:
@@ -54,7 +55,7 @@ def ingest_emails(args):
 
             message_dict = {}
             message_dict["Top_Level_Folder"] = top_level_folder
-            message_dict["Mail_folder"] = always_posix(mail_folder)
+            message_dict["Mail_Folder"] = always_posix(mail_folder)
             message_dict["Message_File"] = int(float(message_file))
 
             # absence of values from fields should have a uniform representation
@@ -67,7 +68,12 @@ def ingest_emails(args):
 
             for it in message_object.items():
                 if it[0] == "Date":
-                    message_dict["Date"] = time.mktime(email.utils.parsedate(it[1]))
+                    try:
+                        message_dict["Date"] = time.mktime(email.utils.parsedate(it[1]))
+                    except:
+                        # This will not skip emails.
+                        # Some messages just have multiple, bogus headers.
+                        pass
                 if it[0] == "Subject":
                     message_dict["Subject"] = it[1]
                 for k in address_headers:
