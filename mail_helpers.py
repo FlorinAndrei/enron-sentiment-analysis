@@ -80,10 +80,9 @@ def ingest_emails(args):
                     if it[0] == k:
                         message_dict[k] = str(clean_address_fields(it[1]))
 
-            message_dict["Body"] = message_object.get_payload()
             message_dict["Body_Message"] = ""
             message_dict["Body_Quoted"] = ""
-            for q in quotequail.quote(message_dict["Body"]):
+            for q in quotequail.quote(message_object.get_payload()):
                 if q[0] == True:
                     message_dict["Body_Message"] += q[1]
                 elif q[0] == False:
