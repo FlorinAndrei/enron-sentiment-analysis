@@ -1,3 +1,15 @@
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+sia = SentimentIntensityAnalyzer()
+
+
+def vader_eval(args):
+    id, text = args
+    pred = sia.polarity_scores(text)
+    pred["id"] = id
+    return pred
+
+
 def make_text_chunks(args):
     tokenizer, text, max_len, index = args
     ids = tokenizer(text)["input_ids"]
