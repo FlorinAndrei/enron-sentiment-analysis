@@ -3,6 +3,7 @@ import os
 import time
 from pathlib import PureWindowsPath
 import pandas as pd
+from chardet import detect
 import quotequail
 
 
@@ -50,8 +51,16 @@ def ingest_emails(args):
         mail_folder = os.path.relpath(path_tuple[0], full_top_path)
         for message_file in path_tuple[2]:
             message_path = os.path.normpath(path_tuple[0] + "/" + message_file)
-            with open(message_path, "r") as message_file_pointer:
-                message_object = email.message_from_file(message_file_pointer)
+            # prevent crash from unusual file encoding
+            with open(message_path, "rb") as message_file_pointer:
+                file_encoding = detect(message_file_pointer.read())["encoding"]
+            with open(
+                message_path, "r", encoding=file_encoding
+            ) as message_file_pointer:
+                try:
+                    message_object = email.message_from_file(message_file_pointer)
+                except:
+                    print(message_path)
 
             message_dict = {}
             message_dict["Top_Level_Folder"] = top_level_folder
